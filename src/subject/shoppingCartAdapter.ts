@@ -6,6 +6,10 @@ export class ShoppingCartAdapter {
     this.shoppingCart = shoppingCart;
   }
 
+  isFreeShipping() {
+    return this.getTotal() > 100;
+  }
+
   getTotal() {
     return this.shoppingCart.items.reduce(
       (total, item) => total + item.price,
