@@ -1,6 +1,9 @@
+import { Product } from "../products/product";
+import { ShoppingCart } from "../subject/shoppingCart";
+
 export class AddItemCommand {
-  item: any;
-  shoppingCart: any;
+  item: Product;
+  shoppingCart: ShoppingCart;
   constructor(shoppingCart, item) {
     this.shoppingCart = shoppingCart;
     this.item = item;
