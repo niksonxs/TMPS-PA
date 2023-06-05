@@ -3,10 +3,18 @@ export class ShoppingCart {
   commands: any[];
   items: any[];
   observers: any[];
+  private static instance: ShoppingCart | null = null;
   constructor() {
     this.items = [];
     this.observers = [];
     this.commands = [];
+  }
+
+  static getInstance() {
+    if (!ShoppingCart.instance) {
+      ShoppingCart.instance = new ShoppingCart();
+    }
+    return ShoppingCart.instance;
   }
 
   addItem(item) {
