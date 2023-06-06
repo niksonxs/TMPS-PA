@@ -1,4 +1,4 @@
-export class Product {
+export abstract class Product {
   name: string;
   price: number;
   constructor(name, price) {

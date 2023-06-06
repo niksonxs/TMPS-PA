@@ -12,7 +12,7 @@ export class ShoppingCartAdapter {
 
   getTotal() {
     return this.shoppingCart.items.reduce(
-      (total, item) => total + item.price,
+      (total, item) => total + item.getPrice(),
       0
     );
   }

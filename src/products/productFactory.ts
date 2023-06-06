@@ -1,12 +1,8 @@
-import { Book } from "./book.js";
-import { Electronics } from "./electronics.js";
-import { Product } from "./product.js";
+import { Book } from "./book";
+import { Electronics } from "./electronics";
+import { Product } from "./product";
 
-interface ProductFactory {
-  createProduct(type: string, name: string, price: number): Product;
-}
-
-export class ConcreteProductFactory implements ProductFactory {
+export class ProductFactory {
   createProduct(type: string, name: string, price: number): Product {
     if (type === "book") {
       return new Book(name, price);

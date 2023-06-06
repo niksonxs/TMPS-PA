@@ -1,8 +1,13 @@
-import { ShoppingCartIterator } from "../iterators/shoppingCartIterator.js";
+import { AddItemCommand } from "../commands/addItemCommand";
+import { ShoppingCartIterator } from "../iterators/shoppingCartIterator";
+import { CartTotalDisplay } from "../observers/cartTotalDisplay";
+import { Product } from "../products/product";
+
 export class ShoppingCart {
-  commands: any[];
-  items: any[];
-  observers: any[];
+  commands: AddItemCommand[];
+  items: Product[];
+  observers: CartTotalDisplay[] = [new CartTotalDisplay()];
+  discountPercentage: number = 0;
   private static instance: ShoppingCart | null = null;
   constructor() {
     this.items = [];
@@ -17,12 +22,16 @@ export class ShoppingCart {
     return ShoppingCart.instance;
   }
 
-  addItem(item) {
+  addItem(item: Product) {
     this.items.push(item);
     this.notifyObservers();
   }
 
-  addObserver(observer) {
+  getItems() {
+    return this.items;
+  }
+
+  addObserver(observer: CartTotalDisplay) {
     this.observers.push(observer);
   }
 
@@ -59,5 +68,10 @@ export class ShoppingCart {
     if (lastCommand) {
       lastCommand.undo();
     }
+  }
+
+  setDiscountedCart(cart) {
+    this.discountPercentage = cart.discountPercentage;
+    this.notifyObservers();
   }
 }
