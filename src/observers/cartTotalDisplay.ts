@@ -1,10 +1,10 @@
-import { Product } from "../products/product";
+import { ShoppingCart } from "../subject/shoppingCart";
+import { ShoppingCartAdapter } from "../subject/shoppingCartAdapter";
 
 export class CartTotalDisplay {
-  update(items: Product[]) {
-    const totalPrice = items.reduce((total, item) => {
-      return total + item.getPrice();
-    }, 0);
+  update(cart: ShoppingCart) {
+    const totalPrice = cart.getTotal();
+
     console.log(`Total price: ${totalPrice}`);
   }
 }

@@ -1,15 +1,25 @@
 import { Product } from "../products/product";
+import { ProductDecorator } from "./productDecorator";
 
-export class DiscountedProduct extends Product {
-  discountPercentage: number;
 
-  constructor(product: Product, discountPercentage: number) {
-    super(product.name, product.price); // Pass the properties to the super constructor
-    this.discountPercentage = discountPercentage;
-  }
+export class DiscountedProduct implements ProductDecorator {
+  private discountedProduct: Product;
+  private discountPercentage: number;
+
+  constructor(product: Product, discountPercentage: number ) {
+      this.discountedProduct = product;
+      this.discountPercentage = discountPercentage;
+    }
+ 
+    getName() {
+      return this.discountedProduct.getName();
+    }
 
   getPrice() {
-    const price = super.getPrice();
-    return price - price * (this.discountPercentage / 100);
+    const totalPrice = this.discountedProduct.getPrice();
+    const discountedPrice = totalPrice - totalPrice * ( this.discountPercentage/100);
+    
+    return discountedPrice;
   }
+
 }

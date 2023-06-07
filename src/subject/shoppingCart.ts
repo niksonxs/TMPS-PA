@@ -3,13 +3,12 @@ import { ShoppingCartIterator } from "../iterators/shoppingCartIterator";
 import { CartTotalDisplay } from "../observers/cartTotalDisplay";
 import { Product } from "../products/product";
 
-export class ShoppingCart {
+export class ShoppingCart  {
   commands: AddItemCommand[];
   items: Product[];
-  observers: CartTotalDisplay[] = [new CartTotalDisplay()];
-  discountPercentage: number = 0;
+  observers: any[];
   private static instance: ShoppingCart | null = null;
-  constructor() {
+  private constructor() {
     this.items = [];
     this.observers = [];
     this.commands = [];
@@ -31,6 +30,10 @@ export class ShoppingCart {
     return this.items;
   }
 
+  getTotal() {
+    return this.items.reduce((total, item) => total + item.getPrice(), 0);
+  }
+
   addObserver(observer: CartTotalDisplay) {
     this.observers.push(observer);
   }
@@ -45,7 +48,9 @@ export class ShoppingCart {
   }
 
   notifyObservers() {
-    this.observers.forEach((observer) => observer.update(this.items));
+    this.observers.forEach((observer) =>
+      observer.update(ShoppingCart.getInstance())
+    );
   }
 
   removeItem(item) {
@@ -70,8 +75,5 @@ export class ShoppingCart {
     }
   }
 
-  setDiscountedCart(cart) {
-    this.discountPercentage = cart.discountPercentage;
-    this.notifyObservers();
-  }
+
 }

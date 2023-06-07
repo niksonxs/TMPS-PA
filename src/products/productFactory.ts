@@ -3,7 +3,7 @@ import { Electronics } from "./electronics";
 import { Product } from "./product";
 
 export class ProductFactory {
-  createProduct(type: string, name: string, price: number): Product {
+  static createProduct(type: string, name: string, price: number): Product {
     if (type === "book") {
       return new Book(name, price);
     } else if (type === "electronics") {

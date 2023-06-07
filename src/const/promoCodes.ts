@@ -9,10 +9,6 @@ export const cartPromoCodes = [
 export const getCodeDiscount = (code: string) => {
   const promoCode = cartPromoCodes.find((promo) => promo.code === code.trim());
   if (promoCode) {
-    console.log(
-      `Applied discount code: ${promoCode.code} - ${promoCode.discount}%`
-    );
-
     return promoCode.discount;
   } else {
     return null; // or any default value you want to assign when the code is not found

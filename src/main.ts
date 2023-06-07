@@ -1,6 +1,5 @@
 import * as readline from "readline";
 import { ProductFactory } from "./products/productFactory";
-import { DiscountedProduct } from "./decorators/discountedProduct";
 import { ShoppingCart } from "./subject/shoppingCart";
 import { ShoppingCartAdapter } from "./subject/shoppingCartAdapter";
 import { AddItemCommand } from "./commands/addItemCommand";
@@ -8,21 +7,24 @@ import { CartTotalDisplay } from "./observers/cartTotalDisplay";
 import { Book } from "./products/book";
 import { Electronics } from "./products/electronics";
 import { products as predefinedProducts } from "./const/products";
-import { getCodeDiscount } from "./const/promocodes";
-import { DiscountedCart } from "./decorators/discountedCart";
+import { getCodeDiscount } from "./const/promoCodes";
+import { DiscountedProduct } from "./decorators/discountedProduct";
 
-const productFactory = new ProductFactory();
 const products = predefinedProducts.map((product) => {
-  return productFactory.createProduct(
+  return ProductFactory.createProduct(
     product.type,
     product.name,
     product.price
-  );
+  )
 });
+
+const  shoppingCart = ShoppingCart.getInstance();
+shoppingCart.addObserver(new CartTotalDisplay());
 
 function displayUserMenu() {
   const menu = `
-    User Menu:
+    Welcome to the shopping cart application!
+    Menu:
     1. View Products
     2. Add Product to Cart
     3. Remove Product from Cart
@@ -37,8 +39,6 @@ function displayUserMenu() {
     output: process.stdout,
     terminal: false,
   });
-
-  const shoppingCart = ShoppingCart.getInstance();
 
   rl.question(menu, (choice) => {
     switch (choice) {
@@ -60,7 +60,6 @@ function displayUserMenu() {
             const shoppingCart = ShoppingCart.getInstance();
             const addItemCommand = new AddItemCommand(shoppingCart, product);
             shoppingCart.executeCommand(addItemCommand);
-            console.log(`Added ${product.getName()} to cart`);
           } else {
             console.log("Invalid product number");
           }
@@ -87,38 +86,45 @@ function displayUserMenu() {
 
       case "4":
         console.log("\n=== View Cart ===");
-        const itemsInCart = shoppingCart.getItems();
-        itemsInCart.forEach((item, index) => {
-          console.log(`${index + 1}. ${item.getName()}`);
-        });
+        const cartIterator =shoppingCart.getIterator();
+        while (cartIterator.hasNext()) {
+          const item = cartIterator.next();
+          console.log(`${item.getName()}: ${item.getPrice()}`);
+        }
+
         displayUserMenu();
         break;
       case "5":
         console.log("\n=== Checkout ===");
-        const total = new ShoppingCartAdapter(shoppingCart).getTotal();
+        const total = shoppingCart.getTotal();
         console.log(`Total: ${total}`);
         displayUserMenu();
         break;
 
       case "6":
-        console.log("\n=== Enter Discount Code ===");
-
-        //i need to prompt for discount code, if this code exist replace the original cart with the discounted cart and push discount code in the cart
-        rl.question("Enter discount code: ", (discountCode) => {
-          const codeDiscount = getCodeDiscount(discountCode);
-          if (codeDiscount) {
-            const discountedCart = new DiscountedCart(
-              shoppingCart,
-              codeDiscount
-            );
-            shoppingCart.setDiscountedCart(discountedCart);
-            console.log(`Discount code ${discountCode} applied`);
-          } else {
-            console.log("Invalid discount code");
-          }
-          displayUserMenu();
-        });
-        break;
+      console.log("\n=== Enter Discount Code ===");
+    
+      // Prompt for discount code
+      rl.question("Enter discount code: ", (discountCode) => {
+        const discount = getCodeDiscount(discountCode);
+        if (discount) {
+          //apply discount to all items in cart
+          const itemsInCart = shoppingCart.getItems();
+          itemsInCart.forEach((item, index) => {
+            const discountedProduct = new DiscountedProduct(item , discount );
+            shoppingCart.removeItem(item);
+            shoppingCart.addItem(discountedProduct);
+          });
+          
+          
+        } else {
+          console.log("Invalid discount code");
+        }
+    
+        // Display user menu after discount code prompt
+        displayUserMenu();
+      });
+      break;
 
       case "0":
         rl.close();

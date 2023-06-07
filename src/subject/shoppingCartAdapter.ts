@@ -1,19 +1,21 @@
-import { ShoppingCart } from "./shoppingCart";
+import { Product } from "../products/product";
+import { ProductFactory } from "../products/productFactory";
 
 export class ShoppingCartAdapter {
-  shoppingCart: ShoppingCart;
-  constructor(shoppingCart) {
-    this.shoppingCart = shoppingCart;
+  adapt(product: Product) {
+    return {
+      name: product.getName(),
+      price: product.getPrice(),
+    };
   }
 
-  isFreeShipping() {
-    return this.getTotal() > 100;
-  }
-
-  getTotal() {
-    return this.shoppingCart.items.reduce(
-      (total, item) => total + item.getPrice(),
-      0
+  revert(adaptedProduct: any) {
+    return ProductFactory.createProduct(
+      adaptedProduct.type,
+      adaptedProduct.name,
+      adaptedProduct.price,
     );
   }
+
+  
 }
